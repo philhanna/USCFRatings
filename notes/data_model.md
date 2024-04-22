@@ -17,13 +17,13 @@
 - ID
 - Name
 
-## Player/System
+### Player/System
 - PlayerID
 - SystemID
 - Date
 - Rating
 
-## Player/Event/Round
+#### Player/Event/Round
 - PlayerID
 - EventID
 - Round
