@@ -4,6 +4,10 @@
 - ID
 - Name
 
+### Event/Section
+- EventID
+- SectionID
+
 ### Event/Round
 - EventID
 - Round
@@ -23,9 +27,10 @@
 - Date
 - Rating
 
-#### Player/Event/Round
+#### Player/Event/Section/Round
 - PlayerID
 - EventID
+- SectionID
 - Round
 - BoardNumber
 - White
