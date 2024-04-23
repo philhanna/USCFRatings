@@ -1,52 +1,62 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
-
-	"golang.org/x/net/html"
+	"strings"
 )
-
 
 var (
 	_, b, _, _  = runtime.Caller(0)
 	ProjectRoot = filepath.Dir(b)
-	FILENAME = filepath.Join(ProjectRoot, "entries.html")
+	FILENAME    = filepath.Join(ProjectRoot, "entries.html")
+	OUTFILE     = "entries.csv"
 )
 
 func main() {
+	var reEntries = regexp.MustCompile(`^(\S+) entries$`)
+	var rePlayer = regexp.MustCompile(`^\s+\d+\s+(\d+)\s+([A-Z\- ]+)\s+(\d+).*$`)
+	var (
+		sectionID  string
+		uscfID     string
+		playerName string
+		rating     string
+	)
+	
+	// Get the contents of the plain text of entries.html
+	cmd := exec.Command("pandoc", FILENAME, "-t", "plain")
+	body, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// Get the <body> node
-	doc := GetRoot()
-	elemBody:= GetNodeWithData(doc, "body")
-	_ = elemBody
-}
-
-func GetRoot() *html.Node {
-
-	// Open the HTML input file
-	fp, err := os.Open(FILENAME)
+	fp, err := os.Create(OUTFILE)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer fp.Close()
 
-	// Parse the HTML into a tree of HTML nodes
-	doc, err := html.Parse(fp)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return doc
-}
-
-func GetNodeWithData(node *html.Node, data string) *html.Node {
-	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		if child.Data == data {
-			return child
+	bb := bytes.NewBuffer(body)
+	scanner := bufio.NewScanner(bb)	
+	for scanner.Scan() {
+		line := scanner.Text()
+		m := reEntries.FindStringSubmatch(line)
+		if m != nil {
+			sectionID = m[1]
+		}
+		m = rePlayer.FindStringSubmatch(line)
+		if m != nil {
+			uscfID = m[1]
+			playerName = strings.TrimSpace(m[2])
+			rating = m[3]
+			fmt.Fprintf(fp, "%s,%s,%s,%s\n", sectionID, uscfID, playerName, rating)
 		}
 	}
-	return nil
 }
