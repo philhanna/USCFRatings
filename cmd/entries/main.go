@@ -29,7 +29,7 @@ func main() {
 		playerName string
 		rating     string
 	)
-	
+
 	// Get the contents of the plain text of entries.html
 	cmd := exec.Command("pandoc", FILENAME, "-t", "plain")
 	body, err := cmd.CombinedOutput()
@@ -44,7 +44,7 @@ func main() {
 	defer fp.Close()
 
 	bb := bytes.NewBuffer(body)
-	scanner := bufio.NewScanner(bb)	
+	scanner := bufio.NewScanner(bb)
 	for scanner.Scan() {
 		line := scanner.Text()
 		m := reEntries.FindStringSubmatch(line)
