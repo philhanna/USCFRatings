@@ -18,6 +18,10 @@ type Player struct {
 	NGames int
 }
 
+// ---------------------------------------------------------------------
+// Constants and variables
+// ---------------------------------------------------------------------
+
 // GetPage gets the page for the specified player from the USCF website.
 // It is implemented as a variable so that it can be overridden in unit
 // tests.
@@ -45,6 +49,10 @@ var (
 const (
 	USCF_WEBSITE = "https://www.uschess.org"
 )
+
+// ---------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------
 
 // BuildURL creates the URL for the player detail page on the USCF website.
 func BuildURL(USCFID string) string {
