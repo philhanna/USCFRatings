@@ -1,6 +1,10 @@
 package uscfratings
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
 
 // ---------------------------------------------------------------------
 // Type definitions
@@ -20,8 +24,20 @@ type Player struct {
 var (
 	DefaultGetPage = func(USCFID string) (string, error) {
 		url := BuildURL(USCFID)
-		_ = url
-		return "", nil // TODO write me
+		resp, err := http.Get(url)
+		if err != nil {
+			return "", err
+		}
+		if resp.StatusCode != http.StatusOK {
+			errmsg := fmt.Errorf("status code was %d, not %d", resp.StatusCode, http.StatusOK)
+			return "", errmsg
+		}
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "", err
+		}
+		data := string(body)
+		return data, nil
 	}
 	GetPage = DefaultGetPage
 )
@@ -41,4 +57,3 @@ func GetPlayer(USCFID string) *Player {
 	// page, err := GetPage(USCFID)
 	return nil // TODO write me
 }
-
