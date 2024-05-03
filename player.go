@@ -60,16 +60,16 @@ const (
 
 // AgeBasedRating returns the provisional rating described in Section
 // 2.3 of the algorithm.
-func AgeBasedRating(age int) float32 {
+func AgeBasedRating(age int) float64 {
 	if age == 0 {
 		age = 26
 	}
-	var rating float32
+	var rating float64
 	switch {
 	case age < 2:
 		rating = 100
 	case age >= 2 && age <= 26:
-		rating = float32(age) * 50
+		rating = float64(age) * 50
 	default:
 		rating = 1300
 	}

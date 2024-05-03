@@ -20,7 +20,7 @@ func TestAgeBasedRating(t *testing.T) {
 	tests := []struct {
 		name string
 		age  int
-		want float32
+		want float64
 	}{
 		{age: 10, want: 500},
 		{age: 1, want: 100},
