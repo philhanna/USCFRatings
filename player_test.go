@@ -103,12 +103,12 @@ func TestParsePlayerPage(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			page : func() string {
+			page: func() string {
 				body, err := os.ReadFile("testdata/15218438.html")
 				assert.Nil(t, err)
 				return string(body)
 			}(),
-			want : &Player{
+			want: &Player{
 				USCFID: MAGNUS_CARLSEN,
 				Name:   "MAGNUS CARLSEN",
 				Rating: 2914.0,
