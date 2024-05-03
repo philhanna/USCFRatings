@@ -131,7 +131,7 @@ func ParsePlayerPage(page string) (*Player, error) {
 			m := reRating.FindString(line)
 			if m != "" {
 				p.Rating, _ = strconv.ParseFloat(m, 64)
-				b := reBasedOn.FindStringSubmatch(m)
+				b := reBasedOn.FindStringSubmatch(line)
 				if b != nil {
 					p.NGames, _ = strconv.Atoi(b[1])
 				}

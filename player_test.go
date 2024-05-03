@@ -1,6 +1,7 @@
 package uscfratings
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -8,9 +9,10 @@ import (
 )
 
 const MAGNUS_CARLSEN = "15218438"
+const PHIL_HANNA = "12910923"
 
 func LocalGetPage(USCFID string) (string, error) {
-	body, err := os.ReadFile("testdata/magnus.html")
+	body, err := os.ReadFile(fmt.Sprintf("testdata/%s.html", USCFID))
 	return string(body), err
 }
 
@@ -62,6 +64,17 @@ func TestGetPlayer(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			USCFID:  PHIL_HANNA,
+			GetPage: LocalGetPage,
+			want: &Player{
+				USCFID: PHIL_HANNA,
+				Name:   "PHIL HANNA",
+				Rating: 829.0,
+				NGames: 22,
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -91,7 +104,7 @@ func TestParsePlayerPage(t *testing.T) {
 	}{
 		{
 			page : func() string {
-				body, err := os.ReadFile("testdata/magnus.html")
+				body, err := os.ReadFile("testdata/15218438.html")
 				assert.Nil(t, err)
 				return string(body)
 			}(),
