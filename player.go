@@ -20,6 +20,7 @@ type Player struct {
 	Name   string
 	Rating float64
 	NGames int
+	EffNGames int
 }
 
 // ---------------------------------------------------------------------
