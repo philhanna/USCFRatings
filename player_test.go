@@ -9,6 +9,11 @@ import (
 
 const MAGNUS_CARLSEN = "15218438"
 
+func LocalGetPage(USCFID string) (string, error) {
+	body, err := os.ReadFile("testdata/magnus.html")
+	return string(body), err
+}
+
 func TestBuildURL(t *testing.T) {
 	want := "https://www.uschess.org/msa/MbrDtlMain.php?15218438"
 	have := BuildURL(MAGNUS_CARLSEN)
@@ -29,11 +34,7 @@ func TestGetPage(t *testing.T) {
 			defer func() {
 				GetPage = DefaultGetPage
 			}()
-			GetPage = func(id string) (string, error) {
-				body, err := os.ReadFile("testdata/magnus.html")
-				assert.Nil(t, err)
-				return string(body), nil
-			}
+			GetPage = LocalGetPage
 			page, err := GetPage(tt.USCFID)
 			assert.Nil(t, err)
 			assert.Contains(t, page, "US Chess MSA - Member Details")
@@ -46,11 +47,13 @@ func TestGetPlayer(t *testing.T) {
 	tests := []struct {
 		name    string
 		USCFID  string
+		GetPage func(ID string) (string, error)
 		want    *Player
 		wantErr bool
 	}{
 		{
-			USCFID: MAGNUS_CARLSEN,
+			USCFID:  MAGNUS_CARLSEN,
+			GetPage: LocalGetPage,
 			want: &Player{
 				USCFID: MAGNUS_CARLSEN,
 				Name:   "MAGNUS CARLSEN",
@@ -62,6 +65,54 @@ func TestGetPlayer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				GetPage = DefaultGetPage
+			}()
+			GetPage = LocalGetPage
+			want := tt.want
+			have, err := GetPlayer(tt.USCFID)
+			switch tt.wantErr {
+			case true:
+				assert.NotNil(t, err)
+			case false:
+				assert.Nil(t, err)
+				assert.Equal(t, want, have)
+			}
+		})
+	}
+}
+
+func TestParsePlayerPage(t *testing.T) {
+	tests := []struct {
+		name    string
+		page    string
+		want    *Player
+		wantErr bool
+	}{
+		{
+			page : func() string {
+				body, err := os.ReadFile("testdata/magnus.html")
+				assert.Nil(t, err)
+				return string(body)
+			}(),
+			want : &Player{
+				USCFID: MAGNUS_CARLSEN,
+				Name:   "MAGNUS CARLSEN",
+				Rating: 2914.0,
+				NGames: 25,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			have, err := ParsePlayerPage(tt.page)
+			switch tt.wantErr {
+			case true:
+				assert.NotNil(t, err)
+			case false:
+				assert.Nil(t, err)
+				assert.Equal(t, tt.want, have)
+			}
 		})
 	}
 }

@@ -83,7 +83,7 @@ func ParsePlayerPage(page string) (*Player, error) {
 	var (
 		err       error
 		p         = new(Player)
-		reName    = regexp.MustCompile(`<font size=+1><b>(\d+): ([A-Z ]+)</b></font>`)
+		reName    = regexp.MustCompile(`<font size=\+1><b>(\d+): ([A-Z ]+)</b></font>`)
 		reRating  = regexp.MustCompile(`(\d+)`)
 		reBasedOn = regexp.MustCompile(`\(Based on (\d+) games\)`)
 	)
