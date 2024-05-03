@@ -58,6 +58,12 @@ const (
 // Functions
 // ---------------------------------------------------------------------
 
+// AgeBasedRating returns the provisional rating described in Section
+// 2.3 of the algorithm.
+func AgeBasedRating(age int) float32 {
+	return 0.0
+}
+
 // BuildURL creates the URL for the player detail page on the USCF website.
 func BuildURL(USCFID string) string {
 	url := fmt.Sprintf("%s/msa/MbrDtlMain.php?%s", USCF_WEBSITE, USCFID)
