@@ -21,7 +21,7 @@ func TestGetPage(t *testing.T) {
 		USCFID string
 	}{
 		{
-			USCFID : MAGNUS_CARLSEN,
+			USCFID: MAGNUS_CARLSEN,
 		},
 	}
 	for _, tt := range tests {
@@ -38,6 +38,30 @@ func TestGetPage(t *testing.T) {
 			assert.Nil(t, err)
 			assert.Contains(t, page, "US Chess MSA - Member Details")
 			assert.Contains(t, page, tt.USCFID)
+		})
+	}
+}
+
+func TestGetPlayer(t *testing.T) {
+	tests := []struct {
+		name    string
+		USCFID  string
+		want    *Player
+		wantErr bool
+	}{
+		{
+			USCFID: MAGNUS_CARLSEN,
+			want: &Player{
+				USCFID: MAGNUS_CARLSEN,
+				Name:   "MAGNUS CARLSEN",
+				Rating: 2914.0,
+				NGames: 25,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 		})
 	}
 }

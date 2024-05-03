@@ -1,9 +1,13 @@
 package uscfratings
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 // ---------------------------------------------------------------------
@@ -14,7 +18,7 @@ import (
 type Player struct {
 	USCFID string
 	Name   string
-	Rating float32
+	Rating float64
 	NGames int
 }
 
@@ -61,7 +65,79 @@ func BuildURL(USCFID string) string {
 }
 
 // GetPlayer returns the Player structure for the specified USCFID
-func GetPlayer(USCFID string) *Player {
-	// page, err := GetPage(USCFID)
-	return nil // TODO write me
+func GetPlayer(USCFID string) (*Player, error) {
+
+	// Get the HTML for this player's page on the USCF website
+	page, err := GetPage(USCFID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse it into a Player structure
+	p, err := ParsePlayerPage(page)
+	return p, err
+}
+
+// ParsePlayerPage returns the Player structure for the specified USCFID
+func ParsePlayerPage(page string) (*Player, error) {
+	var (
+		err       error
+		p         = new(Player)
+		reName    = regexp.MustCompile(`<font size=+1><b>(\d+): ([A-Z ]+)</b></font>`)
+		reRating  = regexp.MustCompile(`(\d+)`)
+		reBasedOn = regexp.MustCompile(`\(Based on (\d+) games\)`)
+	)
+
+	type State uint8
+
+	const (
+		INIT State = iota + 1
+		LOOKING_FOR_RATING_HEADER
+		LOOKING_FOR_RATING
+		DONE
+	)
+
+	state := INIT
+	p.NGames = 25 // Default number of games if not specified otherwise
+
+	reader := strings.NewReader(page)
+	scanner := bufio.NewScanner(reader)
+	for scanner.Scan() {
+		if state == DONE {
+			break
+		}
+		line := scanner.Text()
+		switch state {
+
+		// Looking for the line with the ID and player name
+
+		case INIT:
+			m := reName.FindStringSubmatch(line)
+			if m != nil {
+				p.USCFID = m[1]
+				p.Name = m[2]
+				state = LOOKING_FOR_RATING_HEADER
+			}
+
+		// Looking for <td valign=top>Regular Rating</td>
+
+		case LOOKING_FOR_RATING_HEADER:
+			if line == "Regular Rating" {
+				state = LOOKING_FOR_RATING
+			}
+
+		// Looking for the rating (and possibly number of games)
+		case LOOKING_FOR_RATING:
+			m := reRating.FindString(line)
+			if m != "" {
+				p.Rating, _ = strconv.ParseFloat(m, 64)
+				b := reBasedOn.FindStringSubmatch(m)
+				if b != nil {
+					p.NGames, _ = strconv.Atoi(b[1])
+				}
+				state = DONE
+			}
+		}
+	}
+	return p, err
 }
