@@ -61,7 +61,19 @@ const (
 // AgeBasedRating returns the provisional rating described in Section
 // 2.3 of the algorithm.
 func AgeBasedRating(age int) float32 {
-	return 0.0
+	if age == 0 {
+		age = 26
+	}
+	var rating float32
+	switch {
+	case age < 2:
+		rating = 100
+	case age >= 2 && age <= 26:
+		rating = float32(age) * 50
+	default:
+		rating = 1300
+	}
+	return rating
 }
 
 // BuildURL creates the URL for the player detail page on the USCF website.
