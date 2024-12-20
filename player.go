@@ -14,12 +14,13 @@ import (
 // Type definitions
 // ---------------------------------------------------------------------
 
-// Player is a USCF member
+// Player is structure representing a USCF member and their rating. It
+// is also a work area for the ratings calculation.
 type Player struct {
-	USCFID string
-	Name   string
-	Rating float64
-	NGames int
+	USCFID    string
+	Name      string
+	Rating    float64
+	NGames    int
 	EffNGames int
 }
 
