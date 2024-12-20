@@ -26,6 +26,7 @@ func TestAgeBasedRating(t *testing.T) {
 		{age: 1, want: 100},
 		{age: 26, want: 1300},
 		{age: 70, want: 1300},
+		{age: 0, want: 1300},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -94,6 +95,11 @@ func TestGetPlayer(t *testing.T) {
 				NGames: 22,
 			},
 			wantErr: false,
+		},
+		{
+			USCFID:  "BOGUS",
+			GetPage: localGetPage,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
