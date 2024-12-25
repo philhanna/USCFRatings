@@ -30,7 +30,8 @@ type Player struct {
 
 // GetPage gets the page for the specified player from the USCF website.
 // It is implemented as a variable so that it can be overridden in unit
-// tests.
+// tests.  The default function definition is DefaultGetPage, which gets
+// the page from the real website over the network.
 var DefaultGetPage = func(USCFID string) (string, error) {
 	url := BuildURL(USCFID)
 	resp, err := http.Get(url)
@@ -51,9 +52,7 @@ var DefaultGetPage = func(USCFID string) (string, error) {
 
 var GetPage = DefaultGetPage
 
-const (
-	USCF_WEBSITE = "https://www.uschess.org"
-)
+const USCF_WEBSITE = "https://www.uschess.org"
 
 // ---------------------------------------------------------------------
 // Functions
