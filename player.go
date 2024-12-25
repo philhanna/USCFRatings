@@ -31,26 +31,25 @@ type Player struct {
 // GetPage gets the page for the specified player from the USCF website.
 // It is implemented as a variable so that it can be overridden in unit
 // tests.
-var (
-	DefaultGetPage = func(USCFID string) (string, error) {
-		url := BuildURL(USCFID)
-		resp, err := http.Get(url)
-		if err != nil {
-			return "", err
-		}
-		if resp.StatusCode != http.StatusOK {
-			errmsg := fmt.Errorf("status code was %d, not %d", resp.StatusCode, http.StatusOK)
-			return "", errmsg
-		}
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return "", err
-		}
-		data := string(body)
-		return data, nil
+var DefaultGetPage = func(USCFID string) (string, error) {
+	url := BuildURL(USCFID)
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
 	}
-	GetPage = DefaultGetPage
-)
+	if resp.StatusCode != http.StatusOK {
+		errmsg := fmt.Errorf("status code was %d, not %d", resp.StatusCode, http.StatusOK)
+		return "", errmsg
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	data := string(body)
+	return data, nil
+}
+
+var GetPage = DefaultGetPage
 
 const (
 	USCF_WEBSITE = "https://www.uschess.org"
